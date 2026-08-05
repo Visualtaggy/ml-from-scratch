@@ -10,6 +10,7 @@ class Tensor:
         return f"Tensor(data={self.data}, grad={self.grad})"
 
     def __add__(self,other):
+        other = other if isinstance(other, Tensor) else Tensor(other)
         out = Tensor(self.data + other.data, [self,other])
 
         def _back():
@@ -19,6 +20,8 @@ class Tensor:
         return out
 
     def __mul__(self,other):
+        other = other if isinstance(other,Tensor) else Tensor(other)
+        
         out = Tensor(self.data * other.data,[self,other])
 
         def _back():
@@ -51,6 +54,12 @@ class Tensor:
 
         for node in reversed(topo):
             node.back()
+
+    def __rmul__(self,other):
+        return self * other
+
+    def __radd__(self,other):
+        return self + other
         
 #inputs 
 x1 = Tensor(2.0)
@@ -76,6 +85,8 @@ o = n._reLU()
 
 o.backward()
 
-print(n)
-print(o)
-print(o.prev)
+
+print(x1)
+print(x2)
+print(w1)
+print(w2)
