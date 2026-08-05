@@ -3,7 +3,7 @@ class Tensor:
     def __init__(self,data, prev=None):
         self.data = data
         self.prev = [] if prev is None else prev
-        self._back = lambda:None
+        self.back = lambda:None
         self.grad = 0.0 
 
     def __repr__(self):
@@ -15,7 +15,7 @@ class Tensor:
         def _back():
             self.grad  += out.grad * 1.0 
             other.grad += out.grad * 1.0 
-        out._back = _back
+        out.back = _back
         return out
 
     def __mul__(self,other):
@@ -24,7 +24,7 @@ class Tensor:
         def _back():
             self.grad += other.data * out.grad
             other.grad += self.data * out.grad
-        out._back = _back
+        out.back = _back
         return out
 
     def _reLU(self):
@@ -33,10 +33,25 @@ class Tensor:
 
         def _back():
             self.grad += (1 if x > 0 else 0) * out.grad
-        out._back = _back
+        out.back = _back
         return out
 
+    def backward(self):
+        topo = []
+        visited  =  set()
 
+        def topo_sort(value):
+            if value not in visited:
+                visited.add(value)
+                for child in value.prev:
+                    topo_sort(child)
+                topo.append(value)
+        topo_sort(self)
+        self.grad = 1.0
+
+        for node in reversed(topo):
+            node.back()
+        
 #inputs 
 x1 = Tensor(2.0)
 x2 = Tensor(0.0)
@@ -59,5 +74,8 @@ n = x1w1x2w2 + b
 
 o = n._reLU()
 
+o.backward()
+
 print(n)
 print(o)
+print(o.prev)
