@@ -18,9 +18,20 @@ class Neuron:
        return output
 
 
+class Layer:
+
+    def __init__(self,number_of_inputs, number_of_neurons):
+
+       self.all_neurons =  [Neuron(number_of_inputs) for x in range(number_of_neurons)]
+
+    def __call__(self,x):
+
+        out = [neuron(x) for neuron in self.all_neurons]
+        return out
+
 
 print("=============")
 
 x = [2.0, 3.0]
-n = Neuron(2)
+n = Layer(2,4)
 print(n(x))
