@@ -59,8 +59,8 @@ xs = [
 ys = [1.0, 0.0, 1.0, 0.0]
 
 network = FCNN(3, [4,4,1])
-
-for epoch in range(100):
+y_hat = [network(x) for x in xs]
+for epoch in range(20):
     y_hat = [network(x) for x in xs]
     loss = sum((pred - ygt)**2 for ygt, pred in zip(ys, y_hat))
 
@@ -72,3 +72,6 @@ for epoch in range(100):
         p.data += -0.01 * p.grad
 
     print(epoch, loss.data)
+
+for pred, target in zip(y_hat, ys):
+    print(f"pred={pred.data:.4f}  target={target}")
