@@ -27,7 +27,7 @@ class Layer:
     def __call__(self,x):
 
         out = [neuron(x) for neuron in self.all_neurons]
-        return out
+        return out[0] if len(out) == 1 else out
 
 
 class FCNN:
@@ -43,6 +43,18 @@ class FCNN:
 
 print("=============")
 
-x = [2.0, 3.0, 4.0]
-n = FCNN(3,[4,4,1])
-print(n(x))
+xs = [
+    [1.5, -2.0, 0.5],
+    [-1.0, 1.0, 2.0],
+    [2.0, 2.0, -1.5],
+    [-0.5, -1.0, -1.0],
+]
+ys = [1.0, 0.0, 1.0, 0.0]  # non-negative targets, reachable by ReLU output
+
+
+network = FCNN(3,[4,4,1])
+y_hat = [network(x) for x in xs]
+
+
+loss = sum((pred - ygt)**2 for ygt,pred in zip(ys,y_hat))
+print(loss)
