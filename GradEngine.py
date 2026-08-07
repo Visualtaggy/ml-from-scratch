@@ -60,33 +60,20 @@ class Tensor:
 
     def __radd__(self,other):
         return self + other
-        
-#inputs 
-x1 = Tensor(2.0)
-x2 = Tensor(0.0)
 
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now" 
+        out = Tensor(self.data ** other, [self])
 
-#weights
-w1 = Tensor(-3.0)
-w2 = Tensor(1.0)
+        def _back():
+            self.grad += (other * self.data**(other - 1)) * out.grad
+        out.back = _back
+        return out
 
-#bias
-b= Tensor(6.7)
+    def __sub__(self, other):
+        other = other if isinstance(other, Tensor) else Tensor(other)
+        return self + (other * -1)
 
-
-x1w1 = x1 * w1 
-x2w2 = x2 * w2
-
-x1w1x2w2 = x1w1 + x2w2
-
-n = x1w1x2w2 + b 
-
-o = n._reLU()
-
-o.backward()
-
-
-print(x1)
-print(x2)
-print(w1)
-print(w2)
+    def __rsub__(self, other):
+        other = other if isinstance(other, Tensor) else Tensor(other)
+        return other + (self * -1)
